@@ -6,6 +6,9 @@ import datetime
 import configparser
 import os.path
 
+class HWMissingData(Exception):
+    pass
+
 
 DEVICE_ID = ""
 LOCATION_ID = ""
@@ -97,10 +100,13 @@ def get_temp(token):
     if r.status_code == 401:
         return None, None, None, None, r.status_code
     data = r.json()
-    outdoor_humidity = data["displayedOutdoorHumidity"]
-    indoor_temp = data["indoorTemperature"]
-    outdoor_temp = data["outdoorTemperature"]
-    is_heating = 1 if data["operationStatus"]["mode"] == "Heat" else 0
+    try: 
+        outdoor_humidity = data["displayedOutdoorHumidity"]
+        indoor_temp = data["indoorTemperature"]
+        outdoor_temp = data["outdoorTemperature"]
+        is_heating = 1 if data["operationStatus"]["mode"] == "Heat" else 0
+    except KeyError:
+       raise HWMissingData
     return indoor_temp, outdoor_temp, outdoor_humidity, is_heating, r.status_code
 
 
@@ -118,9 +124,12 @@ def process_temp(token, refresh_token):
     hw_refresh_token = refresh_token
 
     while True:
-        indoor_temp, outdoor_temp, outdoor_humidity, is_heating, status_code = get_temp(
-            hw_token
-        )
+        try:
+            indoor_temp, outdoor_temp, outdoor_humidity, is_heating, status_code = get_temp(
+                hw_token
+            )
+        except HWMissingData:
+            continue
         if status_code == 401:
             hw_token, hw_refresh_token = _refresh_token(hw_refresh_token)
             continue
