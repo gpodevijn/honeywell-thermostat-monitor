@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.vscode
+honeywell.db
+hw_device.txt
+hw_tokens.txt
