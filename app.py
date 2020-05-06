@@ -11,6 +11,7 @@ conn = sqlite3.connect("honeywell.db")
 df = pd.read_sql_query("SELECT * FROM hw_temp", conn)
 
 
+# TODO: Is heating should be on a separated graph
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=df["record_time"], y=df["indoor_temp"],
                     mode='lines',
@@ -27,7 +28,7 @@ fig.show()
 
 app = dash.Dash()
 app.layout = html.Div([
-    dcc.Graph(figure=fig)
+    dcc.Graph(id='hw-temp', figure=fig)
 ])
 
 app.run_server(debug=True, use_reloader=False) 
