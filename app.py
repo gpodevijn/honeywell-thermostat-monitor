@@ -31,4 +31,4 @@ app.layout = html.Div([
     dcc.Graph(id='hw-temp', figure=fig)
 ])
 
-app.run_server(debug=True, use_reloader=False) 
+app.run_server(debug=True, host='0.0.0.0') 
