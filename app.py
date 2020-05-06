@@ -9,8 +9,16 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 conn = sqlite3.connect("honeywell.db")
-df = pd.read_sql_query("SELECT * FROM hw_temp", conn)
 
+@cache.memoize(timeout=60) # 5 minutes
+def compute_df():
+   # [...] run query
+   return pd.read_sql_query("SELECT * FROM hw_temp", conn)
+
+def get_df():
+    return compute_df()
+
+df = get_df()
 
 fig = make_subplots(
     rows=2, cols=2,
@@ -27,8 +35,6 @@ fig.add_trace(go.Scatter(x=df["record_time"], y=df["outdoor_humidity"],
 fig.add_trace(go.Scatter(x=df["record_time"], y=df["is_heating"],
                     mode='lines', name='Is Heating'), row=2, col=2)
 
- 
- 
 
 fig.show()
 
