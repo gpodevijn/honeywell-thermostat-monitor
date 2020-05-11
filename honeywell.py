@@ -141,4 +141,12 @@ if __name__ == "__main__":
     hw_code = sys.argv[1]
     DEVICE_ID, LOCATION_ID = get_device_location_id()
     token, refresh_token = get_token_info(hw_code)
-    process_temp(token, refresh_token)
+    while True:
+        try:
+            process_temp(token, refresh_token)
+        except:
+            sleep(300)            
+            continue
+
+
+    
